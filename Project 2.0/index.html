@@ -1,0 +1,125 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Share Anonymously</title>  
+    <link rel="stylesheet" href="styles.css">  
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Roboto:wght@400&display=swap" rel="stylesheet">  
+    
+</head>  
+<body>  
+    <header>  
+        <div class="nav-container">  
+            <img src="your-logo.png" alt="Logo" class="logo">  
+            <nav class="nav-links">  
+                <div class="dropdown">  
+                    <a href="#">We Offer ▼</a>  
+                    <div class="dropdown-content">  
+                        <a href="#">Service 1</a>  
+                        <a href="#">Service 2</a>  
+                        <a href="#">Service 3</a>  
+                    </div>  
+                </div>  
+                <div class="dropdown">  
+                    <a href="#">Contact Us ▼</a>  
+                    <div class="dropdown-content">  
+                        <a href="#">Email</a>  
+                        <a href="#">Privacy Terms</a>  
+                    </div>  
+                </div>  
+            </nav>  
+        </div>  
+        <h1>Share Anonymously</h1>  
+        <p>Leave messages for recipients while remaining anonymous!</p>  
+        <div class="search-container">  
+            <input type="text" placeholder="Enter your name..." id="nameInput" class="search-bar">  
+            <input type="text" placeholder="Enter recipient name..." id="recipientSearch" class="search-bar">  
+            <button id="searchButton" class="action-button">Search</button>  
+            <button id="writeMessageButton" class="action-button">Write a Message</button>  
+        </div>  
+    </header>  
+
+    <main>  
+        <div class="gallery-container" id="postsList">  
+            <!-- Messages will be dynamically added here -->  
+        </div>  
+        <div class="pagination">  
+            <button>Previous</button>  
+            <span id="pageInfo">Page 1</span>  
+            <button>Next</button>  
+        </div>  
+    </main>  
+
+    <script>  
+        // JavaScript functionality for posting messages and loading them from local storage  
+        document.addEventListener('DOMContentLoaded', loadPosts);  
+
+        const postButton = document.getElementById('writeMessageButton');  
+        const nameInput = document.getElementById('nameInput'); // Input for name  
+        const recipientSearch = document.getElementById('recipientSearch'); // Input for recipient  
+        const postContent = document.createElement('textarea');  
+        postContent.placeholder = "Write your message here...";  
+        postContent.rows = 4;  
+        postContent.style.width = "90%";  
+        postContent.className = 'search-bar'; // Apply the search-bar styling for consistency  
+        document.querySelector('.search-container').appendChild(postContent);  
+
+        postButton.addEventListener('click', () => {  
+            const name = nameInput.value.trim();  
+            const recipient = recipientSearch.value.trim();  
+            const content = postContent.value.trim();  
+            if (name === '' || content === '') {  
+                alert('Name and message content cannot be empty!');  
+                return;  
+            }  
+
+            // Save post to local storage  
+            let posts = JSON.parse(localStorage.getItem('posts')) || [];  
+            posts.push({ name, recipient, content });  
+            localStorage.setItem('posts', JSON.stringify(posts));  
+            addPostToDOM(name, recipient, content, posts.length - 1);  
+            nameInput.value = ''; // Clear name input  
+            recipientSearch.value = ''; // Clear recipient input  
+            postContent.value = ''; // Clear message input  
+        });  
+
+        function loadPosts() {  
+            const posts = JSON.parse(localStorage.getItem('posts')) || [];  
+            posts.forEach((post, index) => {  
+                addPostToDOM(post.name, post.recipient, post.content, index);  
+            });  
+        }  
+
+        function addPostToDOM(name, recipient, content, index) {  
+            const postDiv = document.createElement('div');  
+            postDiv.classList.add('gallery-item');  
+            postDiv.innerHTML = `  
+                <button class="close-button" data-index="${index}">✖</button>  
+                <h3>${name} to ${recipient}</h3>  
+                <p>${content}</p>  
+                <a class="view-details" href="#">❤️ View Details</a>  
+            `;  
+            document.getElementById('postsList').appendChild(postDiv);  
+
+            // Attach click event to the close button  
+            postDiv.querySelector('.close-button').addEventListener('click', () => {  
+                deletePost(index);  
+            });  
+        }  
+
+        function deletePost(index) {  
+            let posts = JSON.parse(localStorage.getItem('posts')) || [];  
+            posts.splice(index, 1); // Remove the post at the specified index  
+            localStorage.setItem('posts', JSON.stringify(posts)); // Update local storage  
+            refreshPosts(); // Refresh the posts displayed on the page  
+        }  
+
+        function refreshPosts() {  
+            const postsList = document.getElementById('postsList');  
+            postsList.innerHTML = ''; // Clear current posts  
+            loadPosts(); // Reload posts from local storage  
+        }  
+    </script>  
+</body>  
+</html>  
