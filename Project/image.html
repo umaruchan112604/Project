@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Dedicate an Image</title>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background: #e9f0fb;
+    color: #1c2841;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .nav-container {
+    width: 100%;
+    background-color: #1a4ecf;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    height: 40px;
+    user-select: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .nav-links > a.home-button {
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: #ff9366;
+    box-shadow: 0 4px 8px rgba(255, 147, 102, 0.4);
+    transition: background-color 0.3s ease;
+  }
+  .nav-links > a.home-button:hover,
+  .nav-links > a.home-button:focus {
+    background-color: #ffb993;
+    outline: none;
+  }
+  .nav-links a, .nav-links > .dropdown > a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    position: relative;
+  }
+  .nav-links a:hover,
+  .nav-links > .dropdown > a:hover {
+    color: #ffcd8c;
+  }
+  .dropdown {
+    position: relative;
+  }
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    border-radius: 8px;
+    margin-top: 5px;
+    right: 0;
+  }
+  .dropdown:hover .dropdown-content,
+  .dropdown:focus-within .dropdown-content {
+    display: block;
+  }
+  .dropdown-content a {
+    color: #1c2841;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  .dropdown-content a:hover,
+  .dropdown-content a:focus {
+    background-color: #f0f0f0;
+    outline: none;
+  }
+  .container {
+    width: 100%;
+    max-width: 350px;
+    background: white;
+    border: 1px solid #d0e2ff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(30, 70, 160, 0.15);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 20px 0 40px;
+  }
+  header {
+    padding: 16px 16px 8px;
+    border-bottom: 2px solid #3a70d8;
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-align: center;
+    color: #1a4ecf;
+    letter-spacing: 1px;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px 20px;
+    gap: 12px;
+  }
+  label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #3a5fc1;
+  }
+  input[type="text"] {
+    border: 1.8px solid #a8c3f7;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 1rem;
+    outline-offset: 1px;
+    transition: border-color 0.3s ease;
+    color: #1a2b58;
+    background-color: #f9fbff;
+  }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #3a70d8;
+    background-color: #eff5ff;
+  }
+  input[type="file"] {
+    font-size: 1rem;
+    cursor: pointer;
+    color: #1a4ecf;
+  }
+  button {
+    margin-top: 8px;
+    background-color: #1a4ecf;
+    border: none;
+    color: white;
+    padding: 14px 0;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.15rem;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(26, 78, 207, 0.3);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  button:hover, button:focus {
+    background-color: #3a70d8;
+    box-shadow: 0 8px 18px rgba(58, 112, 216, 0.5);
+    outline: none;
+  }
+
+  main.feed {
+    overflow-y: auto;
+    max-height: 600px;
+    padding-bottom: 16px;
+    background-color: #f3f8ff;
+    border-top: 1px solid #d0e2ff;
+  }
+  .post {
+    background: white;
+    border: 1px solid #d0e2ff;
+    margin: 16px;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(58, 87, 170, 0.12);
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease;
+  }
+  .post:hover {
+    box-shadow: 0 4px 20px rgba(26, 78, 207, 0.3);
+  }
+  .post-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 14px;
+  }
+  .avatar {
+    width: 40px;
+    height: 40px;
+    background: #1a4ecf;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    color: #ffcd8c;
+    font-size: 1rem;
+    user-select: none;
+    text-transform: uppercase;
+    box-shadow: 0 0 12px #ffcd8c99;
+  }
+  .user-info {
+    font-size: 1rem;
+    color: #1c2841;
+    font-weight: 700;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .user-info span {
+    display: inline-block;
+  }
+  .user-info .from {
+    color: #1a4ecf;
+  }
+  .user-info .to {
+    color: #ff9366;
+  }
+  .post-image {
+    width: 100%;
+    border-top: 1px solid #d0e2ff;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    overflow: hidden;
+    background: #f5faff;
+  }
+  .post-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    user-select: none;
+    transition: transform 0.3s ease;
+  }
+  .post-image img:hover,
+  .post-image img:focus {
+    transform: scale(1.02);
+    outline: none;
+  }
+  main.feed::-webkit-scrollbar {
+    width: 6px;
+  }
+  main.feed::-webkit-scrollbar-thumb {
+    background-color: rgba(26, 78, 207, 0.2);
+    border-radius: 4px;
+  }
+  @media (max-width: 360px) {
+    .container {
+      margin: 20px 12px 40px;
+    }
+    .post {
+      margin: 12px 0;
+    }
+    button {
+      font-size: 1rem;
+      padding: 12px 0;
+    }
+    .nav-container {
+      padding: 8px 10px;
+    }
+    .nav-links {
+      gap: 12px;
+    }
+    .nav-links > a.home-button {
+      padding: 6px 10px;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <header class="nav-container" role="banner" aria-label="Primary navigation">
+    <img src="logo.png" alt="Logo" class="logo" />
+    <nav class="nav-links" role="navigation" aria-label="Main menu">
+      <a href="index.html" class="home-button">Home</a>
+      <div class="dropdown" tabindex="0">
+        <a href="#" aria-haspopup="true" aria-expanded="false">We Offer ▼</a>
+        <div class="dropdown-content" role="menu" aria-label="We Offer submenu">
+          <a href="image.html">Upload Images</a>
+          <a href="audio.html">Upload Audio</a>
+          <a href="video.html">Upload Vidoe</a>
+        </div>
+      </div>
+      <div class="dropdown" tabindex="0">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Contact Us ▼</a>
+        <div class="dropdown-content" role="menu" aria-label="Contact Us submenu">
+          <a href="#" role="menuitem">Email</a>
+          <a href="#" role="menuitem">Privacy Terms</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <section class="container" role="main" aria-label="Image dedication feed">
+    <header>Dedicate an Image</header>
+    <form id="imageForm" aria-label="Image dedication form" novalidate>
+      <label for="senderNameInput">Your Name (From):</label>
+      <input type="text" id="senderNameInput" placeholder="Your name" aria-required="true" maxlength="50" autocomplete="off" />
+
+      <label for="dedicateToInput">Dedicated To (To):</label>
+      <input type="text" id="dedicateToInput" placeholder="Recipient's name" aria-required="true" maxlength="50" autocomplete="off" />
+
+      <label for="imageFileInput">Choose an image file:</label>
+      <input type="file" id="imageFileInput" accept="image/*" aria-required="true" />
+
+      <button type="submit" aria-label="Upload image dedication">Upload</button>
+    </form>
+
+    <main class="feed" id="feed" tabindex="0" aria-live="polite" aria-relevant="additions">
+    </main>
+  </section>
+
+  <script>
+    (function(){
+      const form = document.getElementById('imageForm');
+      const senderInput = document.getElementById('senderNameInput');
+      const dedicateInput = document.getElementById('dedicateToInput');
+      const imageInput = document.getElementById('imageFileInput');
+      const feed = document.getElementById('feed');
+
+      function avatarLetters(name) {
+        if (!name) return '';
+        const parts = name.trim().split(/\s+/);
+        if (parts.length === 1) {
+          return parts[0][0];
+        }
+        return parts[0][0] + parts[1][0];
+      }
+
+      function createPost(sender, recipient, imageSrc) {
+        const post = document.createElement('article');
+        post.className = 'post';
+        post.setAttribute('tabindex', '0');
+        post.setAttribute('role', 'article');
+        post.setAttribute('aria-label', `Image post from ${sender} dedicated to ${recipient}`);
+
+        const header = document.createElement('div');
+        header.className = 'post-header';
+
+        const avatarFrom = document.createElement('div');
+        avatarFrom.className = 'avatar';
+        avatarFrom.textContent = avatarLetters(sender);
+
+        const avatarTo = document.createElement('div');
+        avatarTo.className = 'avatar';
+        avatarTo.textContent = avatarLetters(recipient);
+
+        const userInfo = document.createElement('div');
+        userInfo.className = 'user-info';
+
+        const fromSpan = document.createElement('span');
+        fromSpan.className = 'from';
+        fromSpan.textContent = sender;
+
+        const toSpan = document.createElement('span');
+        toSpan.className = 'to';
+        toSpan.textContent = '→ ' + recipient;
+
+        userInfo.appendChild(fromSpan);
+        userInfo.appendChild(toSpan);
+
+        header.appendChild(avatarFrom);
+        header.appendChild(userInfo);
+        header.appendChild(avatarTo);
+
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'post-image';
+
+        const img = document.createElement('img');
+        img.src = imageSrc;
+        img.alt = `Image dedicated from ${sender} to ${recipient}`;
+        img.loading = 'lazy';
+
+        imageDiv.appendChild(img);
+
+        post.appendChild(header);
+        post.appendChild(imageDiv);
+
+        return post;
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const sender = senderInput.value.trim();
+        const recipient = dedicateInput.value.trim();
+        const files = imageInput.files;
+
+        if (!sender) {
+          alert('Please enter your name (who is sending).');
+          senderInput.focus();
+          return;
+        }
+        if (!recipient) {
+          alert('Please enter the name of the person you want to dedicate to.');
+          dedicateInput.focus();
+          return;
+        }
+        if (!files || files.length === 0) {
+          alert('Please select an image file to upload.');
+          imageInput.focus();
+          return;
+        }
+
+        const file = files[0];
+        if (!file.type.startsWith('image/')) {
+          alert('Selected file is not an image. Please select a valid image file.');
+          imageInput.value = '';
+          imageInput.focus();
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const imageSrc = event.target.result;
+          const post = createPost(sender, recipient, imageSrc);
+          feed.insertBefore(post, feed.firstChild);
+          form.reset();
+          senderInput.focus();
+        };
+        reader.readAsDataURL(file);
+      });
+    })();
+  </script>
+</body>
+</html>

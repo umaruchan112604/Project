@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Dedicate Audio</title>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .nav-container {
+    width: 100%;
+    background-color: #1a4ecf;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    height: 40px;
+    user-select: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .nav-links > a.home-button {
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: #ff9366;
+    box-shadow: 0 4px 8px rgba(255, 147, 102, 0.4);
+    transition: background-color 0.3s ease;
+  }
+  .nav-links > a.home-button:hover,
+  .nav-links > a.home-button:focus {
+    background-color: #ffb993;
+    outline: none;
+  }
+  .nav-links a, .nav-links > .dropdown > a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    position: relative;
+  }
+  .nav-links a:hover,
+  .nav-links > .dropdown > a:hover {
+    color: #ffcd8c; 
+  }
+  .dropdown {
+    position: relative;
+  }
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    border-radius: 8px;
+    margin-top: 5px;
+    right: 0;
+  }
+  .dropdown:hover .dropdown-content,
+  .dropdown:focus-within .dropdown-content {
+    display: block;
+  }
+  .dropdown-content a {
+    color: #1c2841;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  .dropdown-content a:hover,
+  .dropdown-content a:focus {
+    background-color: #f0f0f0;
+    outline: none;
+  }
+
+  .container {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 350px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+  }
+  p.subtitle {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 300;
+    font-size: 1rem;
+    opacity: 0.85;
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    font-size: 0.9rem;
+  }
+  input[type="file"] {
+    font-size: 1rem;
+    cursor: pointer;
+    color: white;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+  button {
+    margin-top: 20px;
+    background-image: linear-gradient(45deg, #542de2, #3100e0);
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 12px 0;
+    border-radius: 24px;
+    cursor: pointer;
+    box-shadow: 0 8px 15px rgba(138, 43, 226, 0.4);
+    transition: background-position 0.5s;
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  button:hover {
+    background-position: right center;
+  }
+  .audio-list {
+    margin-top: 20px;
+    max-height: 280px;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: rgba(255 255 255 / 0.1);
+    padding: 12px;
+  }
+  .audio-item {
+    background: rgba(255 255 255 / 0.15);
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+  }
+  .audio-item:last-child {
+    margin-bottom: 0;
+  }
+  .audio-info {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #d1c4e9;
+  }
+  audio {
+    width: 100%;
+    outline: none;
+    border-radius: 8px;
+  }
+  .audio-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .audio-list::-webkit-scrollbar-thumb {
+    background-color: rgba(138, 43, 226, 0.6);
+    border-radius: 8px;
+  }
+  #upload{
+    width: 100%;
+  }
+  @media (max-width: 360px) {
+    .container {
+      padding: 15px;
+      max-width: 100%;
+    }
+    h1 {
+      font-size: 1.5rem;
+    }
+    button {
+      font-size: 1rem;
+      padding: 12px 0;
+    }
+  }
+</style>
+</head>
+<body>
+  <header class="nav-container" role="banner" aria-label="Primary navigation">
+    <img src="logo.png" alt="Logo" class="logo" />
+    <nav class="nav-links" role="navigation" aria-label="Main menu">
+      <a href="index.html" class="home-button">Home</a>
+      <div class="dropdown" tabindex="0">
+        <a href="#" aria-haspopup="true" aria-expanded="false">We Offer ▼</a>
+        <div class="dropdown-content" role="menu" aria-label="We Offer submenu">
+          <a href="image.html">Upload Images</a>
+          <a href="audio.html">Upload Audio</a>
+          <a href="video.html">Upload Video</a>
+        </div>
+      </div>
+      <div class="dropdown" tabindex="0">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Contact Us ▼</a>
+        <div class="dropdown-content" role="menu" aria-label="Contact Us submenu">
+          <a href="#" role="menuitem">Email</a>
+          <a href="#" role="menuitem">Privacy Terms</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <div class="container" role="main">
+    <h1>Dedicate an Audio</h1>
+    <p class="subtitle">Upload an audio file to dedicate to someone special</p>
+    <form id="audioForm" aria-label="Audio dedication form">
+      <label for="senderNameInput">Your Name (From):</label>
+      <input type="text" id="senderNameInput" placeholder="Your name" aria-required="true" autocomplete="off" maxlength="50" />
+
+      <label for="dedicateToInput">Dedicated To:</label>
+      <input type="text" id="dedicateToInput" placeholder="Name of the person" aria-required="true" autocomplete="off" maxlength="50" />
+
+      <label for="audioFileInput">Choose an audio file:</label>
+      <input type="file" id="audioFileInput" accept="audio/*" aria-required="true" />
+
+      <button type="submit" id="upload">Upload</button>
+    </form>
+
+    <div class="audio-list" id="audioList" aria-live="polite" aria-relevant="additions" role="region" tabindex="0">
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const form = document.getElementById('audioForm');
+      const audioInput = document.getElementById('audioFileInput');
+      const dedicateInput = document.getElementById('dedicateToInput');
+      const senderInput = document.getElementById('senderNameInput');
+      const audioList = document.getElementById('audioList');
+
+      function createAudioItem(sender, dedicatedTo, audioSrc) {
+        const item = document.createElement('div');
+        item.className = 'audio-item';
+
+        const info = document.createElement('div');
+        info.className = 'audio-info';
+        info.textContent = `🎙️ From ${sender} to ${dedicatedTo}`;
+
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.src = audioSrc;
+        audio.setAttribute('preload', 'none');
+        audio.setAttribute('tabindex', '0');
+        audio.setAttribute('aria-label', `Audio dedicated from ${sender} to ${dedicatedTo}`);
+
+        item.appendChild(info);
+        item.appendChild(audio);
+
+        return item;
+      }
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+
+        const files = audioInput.files;
+        const dedicatedTo = dedicateInput.value.trim();
+        const sender = senderInput.value.trim();
+
+        if (!sender) {
+          alert('Please enter your name (who is sending).');
+          senderInput.focus();
+          return;
+        }
+
+        if (!dedicatedTo) {
+          alert('Please enter the name of the person you want to dedicate to.');
+          dedicateInput.focus();
+          return;
+        }
+
+        if (!files || files.length === 0) {
+          alert('Please select an audio file to upload.');
+          audioInput.focus();
+          return;
+        }
+
+        const file = files[0];
+
+        if (!file.type.startsWith('audio/')) {
+          alert('Selected file is not an audio file. Please select a valid audio file.');
+          audioInput.value = '';
+          audioInput.focus();
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const audioSrc = event.target.result;
+          const audioItem = createAudioItem(sender, dedicatedTo, audioSrc);
+          audioList.insertBefore(audioItem, audioList.firstChild);
+          form.reset();
+          senderInput.focus();
+        }
+        reader.readAsDataURL(file);
+      });
+    })();
+  </script>
+</body>
+</html>
+

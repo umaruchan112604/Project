@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Dedicate a Video</title>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #ff5252 0%, #b71c1c 100%);
+    color: #fff5f5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .nav-container {
+    width: 100%;
+    background-color: #d32f2f;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    box-shadow: 0 2px 5px rgba(139,0,0,0.4);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    height: 40px;
+    user-select: none;
+    filter: brightness(0) invert(1);
+  }
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .nav-links > a.home-button {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: #ff7961;
+    box-shadow: 0 4px 8px rgba(255, 121, 97, 0.5);
+    transition: background-color 0.3s ease;
+  }
+  .nav-links > a.home-button:hover,
+  .nav-links > a.home-button:focus {
+    background-color: #ff8a80;
+    outline: none;
+  }
+  .nav-links a, .nav-links > .dropdown > a {
+    color: #ffe6e6;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    position: relative;
+  }
+  .nav-links a:hover,
+  .nav-links > .dropdown > a:hover {
+    color: #ffcccb;
+  }
+  .dropdown {
+    position: relative;
+  }
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ffebee;
+    min-width: 160px;
+    box-shadow: 0 4px 10px rgba(139, 0, 0, 0.3);
+    z-index: 10;
+    border-radius: 8px;
+    margin-top: 5px;
+    right: 0;
+  }
+  .dropdown:hover .dropdown-content,
+  .dropdown:focus-within .dropdown-content {
+    display: block;
+  }
+  .dropdown-content a {
+    color: #b71c1c;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  .dropdown-content a:hover,
+  .dropdown-content a:focus {
+    background-color: #ffcdd2;
+    outline: none;
+  }
+  
+  .container {
+    background: rgba(139, 0, 0, 0.6);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 350px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(139,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    color: #ffebee;
+  }
+  p.subtitle {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 300;
+    font-size: 1rem;
+    opacity: 0.9;
+    color: #ffcdd2;
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    font-size: 0.9rem;
+    color: #ffccd5;
+  }
+  input[type="file"] {
+    font-size: 1rem;
+    cursor: pointer;
+    color: white;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+  button {
+    margin-top: 15px;
+    background-image: linear-gradient(45deg, #e22d2d, #e00000);
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 12px 0;
+    border-radius: 24px;
+    cursor: pointer;
+    box-shadow: 0 8px 15px rgba(226, 43, 83, 0.4);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  button:hover, button:focus {
+    background-color: #d83a3a;
+    box-shadow: 2 8px 18px rgba(216, 58, 58, 0.5);
+    outline: none;
+  }
+  .video-list {
+    margin-top: 20px;
+    max-height: 480px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 12px;
+    background: rgba(255 235 238 / 0.15);
+    padding: 12px;
+    color: #880e4f;
+    display: flex;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+  .video-item {
+    background: rgba(255 205 210 / 0.3);
+    padding: 10px;
+    border-radius: 12px;
+    flex: 0 0 320px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+  .video-info {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #b71c1c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  video {
+    width: 100%;
+    height: 270px;
+    outline: none;
+    border-radius: 8px;
+    background-color:#fff0f1;
+    object-fit: contain;
+  }
+  .video-list::-webkit-scrollbar {
+    height: 8px;
+  }
+  .video-list::-webkit-scrollbar-thumb {
+    background-color: rgba(183, 28, 28, 0.6);
+    border-radius: 8px;
+  }
+  #upload{
+    width: 100%;
+  }
+  @media (max-width: 360px) {
+    .container {
+      padding: 15px;
+      max-width: 100%;
+    }
+    h1 {
+      font-size: 1.5rem;
+    }
+    button {
+      font-size: 1rem;
+      padding: 12px 0;
+    }
+    .video-list {
+      max-height: 340px;
+      gap: 12px;
+    }
+    .video-item {
+      flex: 0 0 240px;
+    }
+    video {
+      height: 150px;
+    }
+  }
+</style>
+</head>
+<body>
+    <header class="nav-container" role="banner" aria-label="Primary navigation">
+        <img src="logo.png" alt="Logo" class="logo" />
+        <nav class="nav-links" role="navigation" aria-label="Main menu">
+          <a href="index.html" class="home-button">Home</a>
+          <div class="dropdown" tabindex="0">
+            <a href="#" aria-haspopup="true" aria-expanded="false">We Offer ▼</a>
+            <div class="dropdown-content" role="menu" aria-label="We Offer submenu">
+              <a href="image.html">Upload Images</a>
+              <a href="audio.html">Upload Audio</a>
+              <a href="video.html">Upload Video</a>
+            </div>
+          </div>
+          <div class="dropdown" tabindex="0">
+            <a href="#" aria-haspopup="true" aria-expanded="false">Contact Us ▼</a>
+            <div class="dropdown-content" role="menu" aria-label="Contact Us submenu">
+              <a href="#" role="menuitem">Email</a>
+              <a href="#" role="menuitem">Privacy Terms</a>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+<div class="container" role="main">
+  <h1>Dedicate a Video</h1>
+  <p class="subtitle">Upload a video file to dedicate to someone special</p>
+  <form id="videoForm" aria-label="Video dedication form">
+    <label for="senderNameInput">Your Name (From):</label>
+    <input type="text" id="senderNameInput" placeholder="Your name" aria-required="true" autocomplete="off" maxlength="50" />
+
+    <label for="dedicateToInput">Dedicated To:</label>
+    <input type="text" id="dedicateToInput" placeholder="Name of the person" aria-required="true" autocomplete="off" maxlength="50" />
+
+    <label for="videoFileInput">Choose a video file:</label>
+    <input type="file" id="videoFileInput" accept="video/*" aria-required="true" />
+
+    <button type="submit" id="upload">Upload</button>
+  </form>
+
+  <div class="video-list" id="videoList" aria-live="polite" aria-relevant="additions" role="region" tabindex="0">
+  </div>
+</div>
+
+<script>
+  (function(){
+    const form = document.getElementById('videoForm');
+    const videoInput = document.getElementById('videoFileInput');
+    const dedicateInput = document.getElementById('dedicateToInput');
+    const senderInput = document.getElementById('senderNameInput');
+    const videoList = document.getElementById('videoList');
+
+    function createVideoItem(sender, dedicatedTo, videoSrc) {
+      const item = document.createElement('div');
+      item.className = 'video-item';
+
+      const info = document.createElement('div');
+      info.className = 'video-info';
+      info.textContent = `🎬 From ${sender} to ${dedicatedTo}`;
+
+      const video = document.createElement('video');
+      video.controls = true;
+      video.src = videoSrc;
+      video.setAttribute('preload', 'none');
+      video.setAttribute('tabindex', '0');
+      video.setAttribute('aria-label', `Video dedicated from ${sender} to ${dedicatedTo}`);
+
+      item.appendChild(info);
+      item.appendChild(video);
+
+      return item;
+    }
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+
+      const files = videoInput.files;
+      const dedicatedTo = dedicateInput.value.trim();
+      const sender = senderInput.value.trim();
+
+      if (!sender) {
+        alert('Please enter your name (who is sending).');
+        senderInput.focus();
+        return;
+      }
+
+      if (!dedicatedTo) {
+        alert('Please enter the name of the person you want to dedicate to.');
+        dedicateInput.focus();
+        return;
+      }
+
+      if (!files || files.length === 0) {
+        alert('Please select a video file to upload.');
+        videoInput.focus();
+        return;
+      }
+
+      const file = files[0];
+
+      if (!file.type.startsWith('video/')) {
+        alert('Selected file is not a video file. Please select a valid video file.');
+        videoInput.value = '';
+        videoInput.focus();
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const videoSrc = event.target.result;
+        const videoItem = createVideoItem(sender, dedicatedTo, videoSrc);
+        videoList.insertBefore(videoItem, videoList.firstChild);
+        form.reset();
+        senderInput.focus();
+      }
+      reader.readAsDataURL(file);
+    });
+  })();
+</script>
+</body>
+</html>
